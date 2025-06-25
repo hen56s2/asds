@@ -13,7 +13,7 @@ local function sendWebhookAlert()
 	local rifts = workspace:FindFirstChild("Rendered") and workspace.Rendered:FindFirstChild("Rifts")
 	if not rifts then return end
 
-	local egg = rifts:FindFirstChild("bruh-egg")
+	local egg = rifts:FindFirstChild("hell-egg")
 	if not egg then return end
 
 	local content = WEBHOOK_CONFIG.everyone and "@everyone" or ""
