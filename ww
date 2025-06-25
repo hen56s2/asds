@@ -1,32 +1,57 @@
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 local WEBHOOK_CONFIG = _G.WEBHOOK_CONFIG or {
 	url = "",
 	everyone = false
 }
 
-local function sendWebhook()
-	local rift = workspace:FindFirstChild("Rendered")
-	if not rift then return end
+local function sendWebhookAlert()
+	if not WEBHOOK_CONFIG.url or WEBHOOK_CONFIG.url == "" then return end
 
-	local riftModels = rift:FindFirstChild("Rifts")
-	if not riftModels then return end
+	local rifts = workspace:FindFirstChild("Rendered") and workspace.Rendered:FindFirstChild("Rifts")
+	if not rifts then return end
 
-	if riftModels:FindFirstChild("void-egg") then
-		local content = WEBHOOK_CONFIG.everyone and "@everyone `bruh-egg` found!" or "`bruh-egg` found!"
+	local egg = rifts:FindFirstChild("hell-egg")
+	if not egg then return end
 
-		local payload = {
-			content = content
-		}
+	local jobId = game.JobId
+	local placeId = game.PlaceId
+	local playerCount = #Players:GetPlayers()
+	local maxPlayers = Players.MaxPlayers
+	local isPrivate = game.PrivateServerId ~= ""
 
-		local success, response = pcall(function()
-			return HttpService:PostAsync(WEBHOOK_CONFIG.url, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
-		end)
+	local joinScript = "game:GetService('TeleportService'):TeleportToPlaceInstance("..placeId..", '"..jobId.."', game.Players.LocalPlayer)"
+	local joinLink = "https://roblox.com/games/start?placeId="..placeId.."&gameInstanceId="..jobId
 
-		if not success then
-			warn("[Webhook Error]:", response)
+	local content = WEBHOOK_CONFIG.everyone and "@everyone\n" or ""
+	content = content .. "**🥚 bruh-egg found!**\n\n"
+	content = content .. "**👥 Players:** "..playerCount.."/"..maxPlayers.."\n"
+	content = content .. "**🔒 Server Type:** "..(isPrivate and "Private" or "Public").."\n"
+	content = content .. "**[🔗 Click to Join]("..joinLink..")**\n"
+	content = content .. "```lua\n"..joinScript.."\n```"
+
+	local payload = {
+		content = content
+	}
+
+	local success, err = pcall(function()
+		local req = (syn and syn.request) or (http and http.request) or (http_request) or (request)
+		if req then
+			req({
+				Url = WEBHOOK_CONFIG.url,
+				Method = "POST",
+				Headers = {
+					["Content-Type"] = "application/json"
+				},
+				Body = HttpService:JSONEncode(payload)
+			})
 		end
+	end)
+
+	if not success then
+		warn("[Webhook Error]:", err)
 	end
 end
 
-sendWebhook()
+sendWebhookAlert()
