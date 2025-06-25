@@ -1,10 +1,11 @@
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
 
 local WEBHOOK_CONFIG = _G.WEBHOOK_CONFIG or {
 	url = "",
 	everyone = false
 }
+
+local FIXED_IMAGE_URL = "https://postimg.cc/wykGYGWD"
 
 local function sendWebhookAlert()
 	if not WEBHOOK_CONFIG.url or WEBHOOK_CONFIG.url == "" then return end
@@ -12,27 +13,19 @@ local function sendWebhookAlert()
 	local rifts = workspace:FindFirstChild("Rendered") and workspace.Rendered:FindFirstChild("Rifts")
 	if not rifts then return end
 
-	local egg = rifts:FindFirstChild("hell-egg")
+	local egg = rifts:FindFirstChild("bruh-egg")
 	if not egg then return end
 
-	local jobId = game.JobId
-	local placeId = game.PlaceId
-	local playerCount = #Players:GetPlayers()
-	local maxPlayers = Players.MaxPlayers
-	local isPrivate = game.PrivateServerId ~= ""
-
-	local joinScript = "game:GetService('TeleportService'):TeleportToPlaceInstance("..placeId..", '"..jobId.."', game.Players.LocalPlayer)"
-	local joinLink = "https://roblox.com/games/start?placeId="..placeId.."&gameInstanceId="..jobId
-
-	local content = WEBHOOK_CONFIG.everyone and "@everyone\n" or ""
-	content = content .. "**🥚 bruh-egg found!**\n\n"
-	content = content .. "**👥 Players:** "..playerCount.."/"..maxPlayers.."\n"
-	content = content .. "**🔒 Server Type:** "..(isPrivate and "Private" or "Public").."\n"
-	content = content .. "**[🔗 Click to Join]("..joinLink..")**\n"
-	content = content .. "```lua\n"..joinScript.."\n```"
+	local content = WEBHOOK_CONFIG.everyone and "@everyone" or ""
 
 	local payload = {
-		content = content
+		content = content,
+		embeds = {{
+			description = "```\n🥚 bruh-egg found!\n```",
+			thumbnail = {
+				url = FIXED_IMAGE_URL
+			}
+		}}
 	}
 
 	local success, err = pcall(function()
