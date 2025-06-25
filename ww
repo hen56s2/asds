@@ -12,7 +12,7 @@ local function sendWebhook()
 	local riftModels = rift:FindFirstChild("Rifts")
 	if not riftModels then return end
 
-	if riftModels:FindFirstChild("hell-egg") then
+	if riftModels:FindFirstChild("void-egg") then
 		local content = WEBHOOK_CONFIG.everyone and "@everyone `bruh-egg` found!" or "`bruh-egg` found!"
 
 		local payload = {
