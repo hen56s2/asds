@@ -1,0 +1,32 @@
+local HttpService = game:GetService("HttpService")
+
+local WEBHOOK_CONFIG = _G.WEBHOOK_CONFIG or {
+	url = "",
+	everyone = false
+}
+
+local function sendWebhook()
+	local rift = workspace:FindFirstChild("Rendered")
+	if not rift then return end
+
+	local riftModels = rift:FindFirstChild("Rifts")
+	if not riftModels then return end
+
+	if riftModels:FindFirstChild("bruh-egg") then
+		local content = WEBHOOK_CONFIG.everyone and "@everyone `bruh-egg` found!" or "`bruh-egg` found!"
+
+		local payload = {
+			content = content
+		}
+
+		local success, response = pcall(function()
+			return HttpService:PostAsync(WEBHOOK_CONFIG.url, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+		end)
+
+		if not success then
+			warn("[Webhook Error]:", response)
+		end
+	end
+end
+
+sendWebhook()
